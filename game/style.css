@@ -1,0 +1,39 @@
+/* The fixed 1024x576 stage is scaled to the window and letterboxed on ink. */
+html, body { margin: 0; height: 100%; overflow: hidden; background: #050810; }
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+}
+#game {
+  display: block;
+  width: min(100vw, calc(100vh * 16 / 9));
+  height: auto;
+  aspect-ratio: 16 / 9;
+  background: #0a1020;
+  box-shadow: 0 0 0 1px #1b2538, 0 18px 70px rgba(0, 0, 0, 0.65);
+  cursor: crosshair;
+}
+#status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+#testout {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: none;
+  margin: 0;
+  padding: 24px 32px;
+  overflow: auto;
+  background: #0a1020;
+  color: #efe3c8;
+  font: 13px/1.5 Consolas, "Courier New", monospace;
+  white-space: pre-wrap;
+}
+body.test #testout { display: block; }

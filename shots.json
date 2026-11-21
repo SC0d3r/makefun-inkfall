@@ -1,5 +1,6 @@
 [
-  { "name": "1-start.jpg", "query": "?shot=start&seed=1" },
-  { "name": "2-play.jpg", "query": "?shot=play&seed=1" },
-  { "name": "3-end.jpg", "query": "?shot=end&seed=1" }
+  { "name": "1-press-hall.jpg", "query": "?shot=cover&seed=1" },
+  { "name": "2-title.jpg", "query": "?shot=title&seed=1" },
+  { "name": "3-night-desk.jpg", "query": "?shot=desk&seed=1" },
+  { "name": "4-edition.jpg", "query": "?shot=results&seed=1" }
 ]
