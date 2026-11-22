@@ -168,29 +168,7 @@ function noteText(value, x, y, maxWidth) {
 function noteIcon(kind, x, y) {
   ctx.save();
   ctx.lineWidth = 1.2;
-  if (kind === 'cone') {
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + 15, y - 6);
-    ctx.lineTo(x + 15, y + 6);
-    ctx.closePath();
-    ctx.fillStyle = rgba(PALETTE.amber, 0.34);
-    ctx.fill();
-    ctx.strokeStyle = PALETTE.amber;
-    ctx.stroke();
-  } else if (kind === 'crate') {
-    ctx.fillStyle = PALETTE.steel;
-    ctx.fillRect(x + 1, y - 6, 13, 12);
-    ctx.strokeStyle = PALETTE.ink;
-    ctx.strokeRect(x + 1.5, y - 5.5, 12, 11);
-    ctx.beginPath();
-    ctx.moveTo(x + 1, y - 6);
-    ctx.lineTo(x + 14, y + 6);
-    ctx.moveTo(x + 14, y - 6);
-    ctx.lineTo(x + 1, y + 6);
-    ctx.strokeStyle = 'rgba(239,227,200,0.55)';
-    ctx.stroke();
-  } else if (kind === 'ink') {
+  if (kind === 'ink') {
     ctx.fillStyle = PALETTE.ink;
     ctx.beginPath();
     ctx.arc(x + 7, y + 1, 6.5, 0, Math.PI * 2);
@@ -248,9 +226,29 @@ function shotLabel(value, x, y, endX, endY, side = 'right') {
   ctx.lineWidth = 1.5;
   ctx.stroke();
   txt(ctx, value, x + 6, y + 16, 15, PALETTE.ink, 'left', '700');
-  const sx = side === 'right' ? x + w : x;
-  const sy = side === 'bottomleft' ? y + h : y + h / 2;
+  const sx = side === 'right' ? x + w : side === 'bottom' ? x + w / 2 : x;
+  const sy = side === 'bottomleft' || side === 'bottom' ? y + h : y + h / 2;
   shotLeader(sx, sy, endX, endY);
+}
+
+// In-world exit tag for the cover: green type with a thin leader to the recess.
+function shotExitLabel() {
+  const x = 640;
+  const y = 86;
+  ctx.save();
+  ctx.strokeStyle = PALETTE.green;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(704, 72);
+  ctx.lineTo(690, 62);
+  ctx.stroke();
+  ctx.fillStyle = PALETTE.green;
+  ctx.beginPath();
+  ctx.arc(690, 62, 2, 0, Math.PI * 2);
+  ctx.fill();
+  txt(ctx, 'ARCHIVE DOOR', x + 1, y + 1, 18, PALETTE.ink, 'left', '800');
+  txt(ctx, 'ARCHIVE DOOR', x, y, 18, PALETTE.green, 'left', '800');
+  ctx.restore();
 }
 
 function shotDecoy(state) {
@@ -285,9 +283,9 @@ export function drawShotNotes(state) {
   ctx = state.ctx;
   shotDecoy(state);
   const x = 16;
-  const y = 70;
-  const w = 252;
-  const h = 168;
+  const y = 84;
+  const w = 228;
+  const h = 104;
   rr(ctx, x + 3, y + 4, w, h, 6);
   ctx.fillStyle = 'rgba(0,0,0,0.4)';
   ctx.fill();
@@ -303,19 +301,18 @@ export function drawShotNotes(state) {
   ctx.fillStyle = 'rgba(10,16,32,0.18)';
   ctx.fillRect(x + 14, y + 32, w - 28, 1);
   const rows = [
-    ['cone', 'Lantern cone: a guard sees'],
-    ['crate', 'Crate or shadow: breaks the line'],
     ['ink', 'Ink Q: blinds a guard 3s'],
     ['decoy', 'Decoy F: pulls him off route'],
     ['door', 'Archive door: needs the key'],
   ];
   for (let i = 0; i < rows.length; i += 1) {
-    const ry = y + 52 + i * 26;
+    const ry = y + 48 + i * 24;
     noteIcon(rows[i][0], x + 14, ry - 5);
-    noteText(rows[i][1], x + 38, ry, w - 48);
+    noteText(rows[i][1], x + 38, ry, w - 40);
   }
-  shotLabel('YOU: in low cover, unseen', 250, 270, 384, 360, 'bottomleft');
+  shotLabel('YOU: in low cover, unseen', 300, 350, 390, 318, 'bottom');
   shotLabel('DECOY: he heard it and turned', 520, 400, 470, 332, 'left');
+  shotExitLabel();
 }
 
 export function drawHud(state) {

@@ -1,5 +1,5 @@
 // Lantern watchmen: patrol, suspicion, search, chase, catch, plus the rotating brass-eye cameras.
-import { GUARD, DETECT } from './config.js';
+import { GUARD, DETECT, PALETTE } from './config.js';
 import { blockedCircle, lineBlocked, blockingPoint } from './level.js';
 
 export const EV_CATCH = 1;
@@ -18,9 +18,9 @@ const wrapAngle = (a) => {
 const angleTo = (x1, y1, x2, y2) => Math.atan2(y2 - y1, x2 - x1);
 
 export function guardColor(guard) {
-  if (guard.state === 'chase') return '#c94f3d';
-  if (guard.state === 'suspicious' || guard.state === 'search') return '#f2a33c';
-  return '#59d6c7';
+  if (guard.state === 'chase') return PALETTE.red;
+  if (guard.state === 'suspicious' || guard.state === 'search') return PALETTE.amber;
+  return PALETTE.gold;
 }
 
 function makeGuard(def, index) {
