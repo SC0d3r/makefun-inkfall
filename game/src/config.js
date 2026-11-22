@@ -100,10 +100,10 @@ export const FLOOR_META = [
 ];
 
 export const UPGRADES = [
-  { id: 'softSoles', name: 'SOFT SOLES', icon: 'soles', line: 'Sneak is faster and still silent.' },
-  { id: 'extraInk', name: 'EXTRA INK', icon: 'ink', line: 'One more ink bomb on every floor.' },
-  { id: 'sparePass', name: 'SPARE PASS', icon: 'pass', line: 'One more press pass for the run.' },
-  { id: 'quietHinges', name: 'QUIET HINGES', icon: 'hinge', line: 'Hiding spots are quick and silent.' },
-  { id: 'widerLens', name: 'WIDER LENS', icon: 'lens', line: 'The alarm cools twice as fast.' },
-  { id: 'paperTrail', name: 'PAPER TRAIL', icon: 'paper', line: 'The decoy winds longer and calls twice.' },
+  { id: 'softSoles', name: 'SOFT SOLES', icon: 'soles', line: 'Sneak is faster and still silent.', short: 'Sneak faster, silent.' },
+  { id: 'extraInk', name: 'EXTRA INK', icon: 'ink', line: 'One more ink bomb on every floor.', short: '+1 ink bomb a floor.' },
+  { id: 'sparePass', name: 'SPARE PASS', icon: 'pass', line: 'One more press pass for the run.', short: '+1 pass for the run.' },
+  { id: 'quietHinges', name: 'QUIET HINGES', icon: 'hinge', line: 'Hiding spots are quick and silent.', short: 'Hide fast and silent.' },
+  { id: 'widerLens', name: 'WIDER LENS', icon: 'lens', line: 'The alarm cools twice as fast.', short: 'Alarm cools 2x fast.' },
+  { id: 'paperTrail', name: 'PAPER TRAIL', icon: 'paper', line: 'The decoy winds longer and calls twice.', short: 'Decoy calls twice.' },
 ];

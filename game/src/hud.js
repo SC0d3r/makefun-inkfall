@@ -58,7 +58,7 @@ function topBar(state) {
   ctx.fillRect(140, 12, 1, 32);
   txt(ctx, `FLOOR ${state.floor.meta.number} · ${state.floor.meta.name}`, 152, 22, 13, PALETTE.amber, 'left', '700');
   txt(ctx, state.floor.meta.objective, 152, 44, 16, PALETTE.paper, 'left', '400');
-  txt(ctx, timer(state.time), 1008, 38, 24, PALETTE.paper, 'right', '700', MONO);
+  txt(ctx, `SHIFT ${timer(state.time)}`, 1008, 38, 24, PALETTE.paper, 'right', '700', MONO);
 }
 
 function detectionPanel(state) {
@@ -131,6 +131,7 @@ function detectionPanel(state) {
   txt(ctx, `${state.floorLoot} / ${state.floor.loot.length}`, ix, 378, 21, '#1f2a3a', 'left', '800', MONO);
   spaced(ctx, 'PRESS PASSES', ix + 92, 354, 10, '#5b4d39', 1.1, 'left', '700');
   for (let i = 0; i < state.maxPasses; i += 1) passPip(ix + 94 + i * 17, 362, i < state.passes);
+  txt(ctx, `CATCHES ${state.catches} / ${state.maxPasses}`, ix + 92, 386, 12, state.catches > 0 ? PALETTE.red : '#5b4d39', 'left', '700', MONO);
 
   spaced(ctx, 'OBJECTIVE', ix, 400, 10, '#5b4d39', 1.2, 'left', '700');
   const itemDone = !state.floor.item.active;

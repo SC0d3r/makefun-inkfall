@@ -11,6 +11,7 @@ function placeGuard(guard, x, y, angle, state, awareness, bubble) {
   guard.state = state;
   guard.awareness = awareness;
   guard.bubble = bubble ?? '';
+  guard.bubbleDY = 0;
   guard.bubbleTimer = bubble ? 4 : 0;
   guard.target = { x, y };
   guard.lastSeen = { x, y };
@@ -101,8 +102,8 @@ export function stageShot(name, api) {
   game.objectiveDone = false;
   game.exitOpen = false;
   game.floor.exit.open = false;
-  game.player.x = 315;
-  game.player.y = 308;
+  game.player.x = 390;
+  game.player.y = 300;
   game.player.crouched = true;
   game.player.lowHidden = true;
   game.player.visibility = 'HIDDEN';
@@ -111,9 +112,10 @@ export function stageShot(name, api) {
   game.player.aim = Math.PI;
   game.player.ink = 2;
   game.player.decoys = 2;
-  placeGuard(game.guards[0], 470, 292, Math.PI, 'suspicious', 0.63, 'What was that?');
-  placeGuard(game.guards[1], 110, 190, 0.25, 'patrol', 0, '');
-  placeGuard(game.guards[2], 640, 420, -2.5, 'patrol', 0, '');
+  placeGuard(game.guards[0], 540, 310, Math.PI, 'suspicious', 0.63, 'What was that?');
+  game.guards[0].bubbleDY = -78;
+  placeGuard(game.guards[1], 120, 390, -0.5, 'patrol', 0, '');
+  placeGuard(game.guards[2], 680, 300, -2.4, 'patrol', 0, '');
 }
 
 const IDLE = { dx: 0, dy: 0, sneak: false, sprint: false, aim: 0 };

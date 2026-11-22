@@ -142,7 +142,24 @@ export function createRenderer(canvas) {
     ctx.beginPath();
     ctx.arc(cx, cy, 3, 0, Math.PI * 2);
     ctx.fill();
-    txt(ctx, floor.exit.open ? 'EXIT' : 'LOCKED', cx, e.y - 5, 10, floor.exit.open ? PALETTE.green : PALETTE.amber, 'center', '700');
+    const tagW = 184;
+    const tagH = 26;
+    const tagX = Math.max(4, Math.min(W - tagW - 4, cx - tagW / 2));
+    const tagY = Math.max(4, e.y - 34);
+    rr(ctx, tagX, tagY, tagW, tagH, 4);
+    ctx.fillStyle = floor.exit.open ? 'rgba(10,34,28,0.96)' : 'rgba(10,26,24,0.94)';
+    ctx.fill();
+    ctx.strokeStyle = floor.exit.open ? PALETTE.green : '#4b8b70';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    txt(ctx, floor.exit.name, tagX + tagW / 2, tagY + 19, 20, floor.exit.open ? PALETTE.green : '#8fe0b0', 'center', '800');
+    ctx.fillStyle = floor.exit.open ? PALETTE.green : '#4b8b70';
+    ctx.beginPath();
+    ctx.moveTo(cx - 5, tagY + tagH);
+    ctx.lineTo(cx + 5, tagY + tagH);
+    ctx.lineTo(cx, tagY + tagH + 6);
+    ctx.closePath();
+    ctx.fill();
   }
 
   function lowCover(c) {
@@ -488,7 +505,7 @@ export function createRenderer(canvas) {
       ctx.font = '700 11px system-ui, sans-serif';
       const tw = ctx.measureText(g.bubble).width + 14;
       const bx = Math.max(4, Math.min(W - tw - 4, g.x - tw / 2));
-      const by = g.y - 64;
+      const by = g.y - 64 + (g.bubbleDY || 0);
       rr(ctx, bx, by, tw, 20, 4);
       ctx.fillStyle = PALETTE.paper;
       ctx.fill();
@@ -533,30 +550,38 @@ export function createRenderer(canvas) {
 
   function playerBody(state, clock) {
     const p = state.player;
-    const alpha = p.visibility === 'HIDDEN' ? 0.3 : p.visibility === 'EXPOSED' ? 0.95 : 0.62;
+    const shot = state.shot;
+    const base = p.visibility === 'HIDDEN' ? 0.3 : p.visibility === 'EXPOSED' ? 0.95 : 0.62;
+    const alpha = Math.min(1, base + (shot ? 0.28 : 0));
+    if (shot) {
+      ctx.fillStyle = 'rgba(89,214,199,0.10)';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 22, 0, Math.PI * 2);
+      ctx.fill();
+    }
     ctx.strokeStyle = `rgba(89,214,199,${alpha})`;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = shot ? 2.5 : 2;
     ctx.beginPath();
-    ctx.arc(p.x, p.y, p.visibility === 'HIDDEN' ? 10 : 13, 0, Math.PI * 2);
+    ctx.arc(p.x, p.y, p.visibility === 'HIDDEN' ? (shot ? 14 : 10) : (shot ? 15 : 13), 0, Math.PI * 2);
     ctx.stroke();
     ctx.fillStyle = 'rgba(3,6,14,0.6)';
     ctx.beginPath();
-    ctx.ellipse(p.x + 1, p.y + 6, 9, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(p.x + 1, p.y + 6, shot ? 10 : 9, 4, 0, 0, Math.PI * 2);
     ctx.fill();
     const bob = p.moving ? Math.sin(p.anim) * 0.8 : 0;
-    ctx.fillStyle = '#d8c9a8';
+    ctx.fillStyle = '#f0e3c6';
     ctx.beginPath();
-    ctx.ellipse(p.x, p.y + bob, p.crouched ? 7.5 : 8.5, p.crouched ? 7 : 9, 0, 0, Math.PI * 2);
+    ctx.ellipse(p.x, p.y + bob, p.crouched ? (shot ? 9.5 : 7.5) : 8.5, p.crouched ? (shot ? 9 : 7) : 9, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = PALETTE.teal;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = shot ? 2 : 1.5;
     ctx.stroke();
     ctx.fillStyle = '#1b2334';
     ctx.beginPath();
-    ctx.arc(p.x, p.y - (p.crouched ? 4 : 6), 5, Math.PI, Math.PI * 2);
+    ctx.arc(p.x, p.y - (p.crouched ? (shot ? 5 : 4) : 6), shot ? 6 : 5, Math.PI, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = '#efe3c8';
-    ctx.fillRect(p.x - 4, p.y - (p.crouched ? 3 : 5), 8, 2);
+    ctx.fillRect(p.x - (shot ? 5 : 4), p.y - (p.crouched ? (shot ? 4 : 3) : 5), shot ? 10 : 8, 2);
     if (p.moving) {
       ctx.strokeStyle = 'rgba(27,35,52,0.9)';
       ctx.lineWidth = 2;
@@ -569,15 +594,17 @@ export function createRenderer(canvas) {
     }
     if (p.visibility === 'HIDDEN') {
       const label = p.inHiding ? 'HIDDEN · IN COVER' : 'HIDDEN';
-      ctx.font = '700 10px system-ui, sans-serif';
-      const tw = ctx.measureText(label).width + 12;
-      rr(ctx, p.x - tw / 2, p.y - 30, tw, 15, 7);
+      const pillSize = shot ? 12 : 10;
+      ctx.font = `700 ${pillSize}px system-ui, sans-serif`;
+      const tw = ctx.measureText(label).width + (shot ? 16 : 12);
+      const pillH = shot ? 18 : 15;
+      rr(ctx, p.x - tw / 2, p.y - (shot ? 36 : 30), tw, pillH, 7);
       ctx.fillStyle = 'rgba(38,104,79,0.95)';
       ctx.fill();
       ctx.strokeStyle = PALETTE.teal;
       ctx.lineWidth = 1;
       ctx.stroke();
-      txt(ctx, label, p.x, p.y - 19, 10, PALETTE.teal, 'center', '700');
+      txt(ctx, label, p.x, p.y - (shot ? 23 : 19), pillSize, PALETTE.teal, 'center', '700');
     }
   }
 
