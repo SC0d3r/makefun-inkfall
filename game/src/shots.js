@@ -21,6 +21,7 @@ function placeGuard(guard, x, y, angle, state, awareness, bubble) {
 export function stageShot(name, api) {
   const game = api.game;
   game.shot = true;
+  game.shotDecoy = null;
   if (name === 'title') {
     api.loadFloor(0);
     game.mode = 'title';
@@ -112,6 +113,7 @@ export function stageShot(name, api) {
   game.player.aim = Math.PI;
   game.player.ink = 2;
   game.player.decoys = 2;
+  game.shotDecoy = { x: 462, y: 332 };
   placeGuard(game.guards[0], 540, 310, Math.PI, 'suspicious', 0.63, 'What was that?');
   game.guards[0].bubbleDY = -78;
   placeGuard(game.guards[1], 120, 390, -0.5, 'patrol', 0, '');

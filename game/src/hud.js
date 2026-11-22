@@ -1,6 +1,6 @@
 // The paper-cream detection panel, top bar, segmented alarm, passes, checklist and rule strips.
 import { ALARM, MONO, PALETTE } from './config.js';
-import { rr, txt, wrap, spaced } from './draw.js';
+import { font, rr, txt, wrap, spaced, rgba } from './draw.js';
 
 const STAGE_COLOR = {
   CALM: PALETTE.teal,
@@ -151,6 +151,171 @@ function bottomStrips(state) {
   txt(ctx, 'WASD MOVE   SHIFT SNEAK   SPACE SPRINT   E INTERACT   Q INK   F DECOY   ESC PAUSE', 16, 531, 14, PALETTE.paper, 'left', '600');
   txt(ctx, `${state.player.ink} INK · ${state.player.decoys} DECOY`, 1008, 531, 12, PALETTE.amber, 'right', '700', MONO);
   txt(ctx, 'WIN: take the objective and reach the green exit.    LOSE: three catches.    ALARM: the night crew hunts you.', 512, 553, 14, PALETTE.paperDim, 'center', '500');
+}
+
+const NOTE_FONT = "'Liberation Sans Narrow', 'Arial Narrow', 'DejaVu Sans Condensed', system-ui, sans-serif";
+
+function noteText(value, x, y, maxWidth) {
+  ctx.font = font(17, '700', NOTE_FONT);
+  const width = ctx.measureText(value).width;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(Math.min(1, maxWidth / width), 1);
+  txt(ctx, value, 0, 0, 17, '#2a2a28', 'left', '700', NOTE_FONT);
+  ctx.restore();
+}
+
+function noteIcon(kind, x, y) {
+  ctx.save();
+  ctx.lineWidth = 1.2;
+  if (kind === 'cone') {
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + 15, y - 6);
+    ctx.lineTo(x + 15, y + 6);
+    ctx.closePath();
+    ctx.fillStyle = rgba(PALETTE.amber, 0.34);
+    ctx.fill();
+    ctx.strokeStyle = PALETTE.amber;
+    ctx.stroke();
+  } else if (kind === 'crate') {
+    ctx.fillStyle = PALETTE.steel;
+    ctx.fillRect(x + 1, y - 6, 13, 12);
+    ctx.strokeStyle = PALETTE.ink;
+    ctx.strokeRect(x + 1.5, y - 5.5, 12, 11);
+    ctx.beginPath();
+    ctx.moveTo(x + 1, y - 6);
+    ctx.lineTo(x + 14, y + 6);
+    ctx.moveTo(x + 14, y - 6);
+    ctx.lineTo(x + 1, y + 6);
+    ctx.strokeStyle = 'rgba(239,227,200,0.55)';
+    ctx.stroke();
+  } else if (kind === 'ink') {
+    ctx.fillStyle = PALETTE.ink;
+    ctx.beginPath();
+    ctx.arc(x + 7, y + 1, 6.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + 13, y - 4, 3, 0, Math.PI * 2);
+    ctx.arc(x + 1, y - 3, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = PALETTE.steel;
+    ctx.beginPath();
+    ctx.arc(x + 7, y + 1, 6.5, 0, Math.PI * 2);
+    ctx.stroke();
+  } else if (kind === 'decoy') {
+    ctx.beginPath();
+    ctx.moveTo(x + 8, y - 8);
+    ctx.lineTo(x + 16, y);
+    ctx.lineTo(x + 8, y + 8);
+    ctx.lineTo(x, y);
+    ctx.closePath();
+    ctx.fillStyle = PALETTE.amber;
+    ctx.fill();
+    ctx.strokeStyle = PALETTE.ink;
+    ctx.stroke();
+  } else {
+    ctx.fillStyle = PALETTE.green;
+    ctx.fillRect(x + 2, y - 7, 12, 14);
+    ctx.strokeStyle = PALETTE.ink;
+    ctx.strokeRect(x + 2.5, y - 6.5, 11, 13);
+    ctx.fillStyle = PALETTE.ink;
+    ctx.fillRect(x + 10, y - 1, 2, 2);
+  }
+  ctx.restore();
+}
+
+function shotLeader(x1, y1, x2, y2) {
+  ctx.strokeStyle = PALETTE.ink;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}
+
+function shotLabel(value, x, y, endX, endY, side = 'right') {
+  ctx.font = font(15, '700');
+  const w = ctx.measureText(value).width + 12;
+  const h = 22;
+  rr(ctx, x + 2, y + 2, w, h, 4);
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.fill();
+  rr(ctx, x, y, w, h, 4);
+  ctx.fillStyle = PALETTE.paper;
+  ctx.fill();
+  ctx.strokeStyle = PALETTE.ink;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  txt(ctx, value, x + 6, y + 16, 15, PALETTE.ink, 'left', '700');
+  const sx = side === 'right' ? x + w : x;
+  const sy = side === 'bottomleft' ? y + h : y + h / 2;
+  shotLeader(sx, sy, endX, endY);
+}
+
+function shotDecoy(state) {
+  const d = state.shotDecoy;
+  if (!d) return;
+  ctx.save();
+  ctx.strokeStyle = rgba(PALETTE.amber, 0.55 + Math.sin((state.clock || 0) * 5) * 0.15);
+  ctx.lineWidth = 1.6;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.arc(d.x, d.y, 27, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(d.x, d.y - 9);
+  ctx.lineTo(d.x + 8, d.y);
+  ctx.lineTo(d.x, d.y + 9);
+  ctx.lineTo(d.x - 8, d.y);
+  ctx.closePath();
+  ctx.fillStyle = PALETTE.amber;
+  ctx.fill();
+  ctx.strokeStyle = PALETTE.ink;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.fillStyle = PALETTE.paper;
+  ctx.fillRect(d.x - 1, d.y - 3, 2, 6);
+  ctx.restore();
+}
+
+// Shot-only field guide: the cover explains its own rules, then points at Wren and the decoy.
+export function drawShotNotes(state) {
+  ctx = state.ctx;
+  shotDecoy(state);
+  const x = 16;
+  const y = 70;
+  const w = 252;
+  const h = 168;
+  rr(ctx, x + 3, y + 4, w, h, 6);
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.fill();
+  rr(ctx, x, y, w, h, 6);
+  ctx.fillStyle = PALETTE.paper;
+  ctx.fill();
+  ctx.strokeStyle = PALETTE.ink;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.fillStyle = PALETTE.red;
+  ctx.fillRect(x + 12, y, w - 24, 4);
+  spaced(ctx, 'FIELD NOTES', x + 14, y + 24, 13, '#5b4d39', 1.4, 'left', '800');
+  ctx.fillStyle = 'rgba(10,16,32,0.18)';
+  ctx.fillRect(x + 14, y + 32, w - 28, 1);
+  const rows = [
+    ['cone', 'Lantern cone: a guard sees'],
+    ['crate', 'Crate or shadow: breaks the line'],
+    ['ink', 'Ink Q: blinds a guard 3s'],
+    ['decoy', 'Decoy F: pulls him off route'],
+    ['door', 'Archive door: needs the key'],
+  ];
+  for (let i = 0; i < rows.length; i += 1) {
+    const ry = y + 52 + i * 26;
+    noteIcon(rows[i][0], x + 14, ry - 5);
+    noteText(rows[i][1], x + 38, ry, w - 48);
+  }
+  shotLabel('YOU: in low cover, unseen', 250, 270, 384, 360, 'bottomleft');
+  shotLabel('DECOY: he heard it and turned', 520, 400, 470, 332, 'left');
 }
 
 export function drawHud(state) {

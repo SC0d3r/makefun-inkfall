@@ -3,7 +3,7 @@ import { FIELD, PALETTE, MONO } from './config.js';
 import { conePolygon, cameraPolygon, guardColor } from './guards.js';
 import { findInteract } from './player.js';
 import { rr, txt, wrap, rgba, circle, spaced } from './draw.js';
-import { drawHud } from './hud.js';
+import { drawHud, drawShotNotes } from './hud.js';
 import { drawTitle, drawDesk, drawPause, drawResults, drawFloorCard, drawCaught } from './screens.js';
 
 const W = FIELD.w;
@@ -741,6 +741,7 @@ export function createRenderer(canvas) {
     ctx.fillRect(0, 0, 1024, 576);
     if (state.floor !== null) drawWorld(state);
     if (state.mode !== 'title' && state.floor !== null) drawHud(state);
+    if (state.shot && state.mode === 'play') drawShotNotes(state);
     if (state.mode === 'title') drawTitle(state);
     else if (state.mode === 'desk') drawDesk(state);
     else if (state.mode === 'paused') drawPause(state);
